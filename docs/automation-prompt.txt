@@ -1,15 +1,18 @@
-Run exactly these commands from the repo root (growth-signal-outbound, main):
+Run exactly from repo root (growth-signal-outbound, main):
 
   bash scripts/cloud-send.sh
 
-Do NOT run `python run.py composio-send` directly — use the script above.
+Do NOT run `python run.py composio-send` directly.
 Queue file is `send_queue.json` at repo root (NOT output/send_queue.json).
 
 COMPOSIO_API_KEY must be in Cloud Agent secrets.
 
-After the script finishes, read send_queue.json and report:
-- emails sent this run (status changed to "sent")
-- still pending + next scheduled_at
-- if all sent: "All outbound emails complete."
+After the script, parse stdout for "Sent: N".
 
-If send_queue.json is missing after clone, stop and report — do not rebuild the queue.
+SLACK RULES (strict):
+- If N is 0 and no errors: do NOT use Send to Slack. End silently.
+- If N > 0: post to Slack — count sent, recipient(s), pending count, next scheduled_at.
+- If all queue items are sent: post once — "All outbound emails complete."
+- If script fails OR send_queue.json missing: post to Slack with the error.
+
+Do not post status for idle cron checks (Sent: 0).
