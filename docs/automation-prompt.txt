@@ -7,7 +7,7 @@ Queue file is `send_queue.json` at repo root (NOT output/send_queue.json).
 
 COMPOSIO_API_KEY must be in Cloud Agent secrets.
 Optional: HUNTER_API_KEY for email verification before send.
-GITHUB_TOKEN (repo write) required so send_queue.json persists — without it, emails may send multiple times.
+Git push auth (pick one): GITHUB_TOKEN or GIT_SSH_PRIVATE_KEY — required so send_queue.json persists.
 
 After the script, parse stdout for "Sent: N".
 

@@ -14,6 +14,20 @@ if [[ ! -f send_queue.json ]]; then
   exit 1
 fi
 
+_configure_git_push() {
+  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/narayan-metaflow/growth-signal-outbound.git"
+  elif [[ -n "${GIT_SSH_PRIVATE_KEY:-}" ]]; then
+    local keyfile
+    keyfile="$(mktemp)"
+    trap 'rm -f "$keyfile"' EXIT
+    printf '%s\n' "$GIT_SSH_PRIVATE_KEY" > "$keyfile"
+    chmod 600 "$keyfile"
+    export GIT_SSH_COMMAND="ssh -i $keyfile -o StrictHostKeyChecking=accept-new"
+    git remote set-url origin "git@github.com:narayan-metaflow/growth-signal-outbound.git"
+  fi
+}
+
 .venv/bin/python run.py composio-send
 SENT=$?
 
@@ -25,8 +39,9 @@ git config user.email "outbound-bot@users.noreply.github.com"
 git config user.name "Outbound Bot"
 git add send_queue.json
 git commit -m "chore: update send queue after composio-send"
+_configure_git_push
 if ! git push origin HEAD; then
-  echo "ERROR: git push failed — queue updates not persisted; disable automation to avoid duplicate sends" >&2
+  echo "ERROR: git push failed — add GITHUB_TOKEN or GIT_SSH_PRIVATE_KEY to Cursor Cloud secrets" >&2
   exit 1
 fi
 
