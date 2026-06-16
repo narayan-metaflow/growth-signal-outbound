@@ -12,7 +12,7 @@
     "employee_count": 200,
     "scheduled_at": "2026-06-16T09:00:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:00 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r75243073349270619",
     "via": "composio"
   },
@@ -29,7 +29,7 @@
     "employee_count": 50,
     "scheduled_at": "2026-06-16T09:04:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:04 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r-543811177995994090",
     "via": "composio"
   },
@@ -46,7 +46,7 @@
     "employee_count": 500,
     "scheduled_at": "2026-06-16T09:08:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:08 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r-1889320706496226151",
     "via": "composio"
   },
