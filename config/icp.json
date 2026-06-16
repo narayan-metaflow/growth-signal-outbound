@@ -1,0 +1,23 @@
+{
+  "roles": [
+    "Growth Marketing Manager",
+    "Head of Growth",
+    "Head of Growth Marketing",
+    "VP Growth",
+    "CMO",
+    "Chief Marketing Officer"
+  ],
+  "location": "United States",
+  "max_employees": 500,
+  "search_domains": [
+    "greenhouse.io",
+    "lever.co",
+    "jobs.ashbyhq.com"
+  ],
+  "search_queries": [
+    "\"Head of Growth\" OR \"Head of Growth Marketing\" site:greenhouse.io OR site:lever.co OR site:jobs.ashbyhq.com United States",
+    "\"Growth Marketing Manager\" site:greenhouse.io OR site:lever.co OR site:jobs.ashbyhq.com United States",
+    "\"CMO\" OR \"Chief Marketing Officer\" site:greenhouse.io OR site:lever.co United States hiring"
+  ],
+  "results_per_query": 10
+}

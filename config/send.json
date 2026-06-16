@@ -1,0 +1,8 @@
+{
+  "timezone": "America/New_York",
+  "send_days": ["tuesday", "wednesday", "thursday"],
+  "window_start": "09:00",
+  "window_end": "11:30",
+  "minutes_between": 4,
+  "skip_without_email": true
+}
