@@ -1,15 +1,15 @@
-Run on each cron trigger:
+Run exactly these commands from the repo root (growth-signal-outbound, main):
 
-1. cd to repo root (growth-signal-outbound, main branch)
-2. python3 -m venv .venv 2>/dev/null || true
-3. .venv/bin/pip install -q -r requirements.txt
-4. Verify queue exists: ls -la send_queue.json (must be at repo root)
-5. Run: bash scripts/cloud-send.sh
+  bash scripts/cloud-send.sh
+
+Do NOT run `python run.py composio-send` directly — use the script above.
+Queue file is `send_queue.json` at repo root (NOT output/send_queue.json).
 
 COMPOSIO_API_KEY must be in Cloud Agent secrets.
 
-Report from send_queue.json:
-- sent this run (status -> "sent")
+After the script finishes, read send_queue.json and report:
+- emails sent this run (status changed to "sent")
 - still pending + next scheduled_at
+- if all sent: "All outbound emails complete."
 
-If send_queue.json is missing, run: .venv/bin/python run.py schedule
+If send_queue.json is missing after clone, stop and report — do not rebuild the queue.
