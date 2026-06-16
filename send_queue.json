@@ -12,7 +12,7 @@
     "employee_count": 200,
     "scheduled_at": "2026-06-16T09:00:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:00 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r75243073349270619",
     "via": "composio"
   },
@@ -29,7 +29,7 @@
     "employee_count": 50,
     "scheduled_at": "2026-06-16T09:04:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:04 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r-543811177995994090",
     "via": "composio"
   },
@@ -46,7 +46,7 @@
     "employee_count": 500,
     "scheduled_at": "2026-06-16T09:08:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:08 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r-1889320706496226151",
     "via": "composio"
   },
@@ -63,7 +63,7 @@
     "employee_count": 50,
     "scheduled_at": "2026-06-16T09:12:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:12 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r2120428839179350666",
     "via": "composio"
   },
@@ -80,7 +80,7 @@
     "employee_count": 20,
     "scheduled_at": "2026-06-16T09:16:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:16 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r8240969859056914123",
     "via": "composio"
   },
@@ -97,7 +97,7 @@
     "employee_count": 200,
     "scheduled_at": "2026-06-16T09:20:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:20 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r-392930270403045163",
     "via": "composio"
   },
@@ -114,7 +114,7 @@
     "employee_count": 200,
     "scheduled_at": "2026-06-16T09:24:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:24 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r8258472404192714548",
     "via": "composio"
   },
@@ -131,7 +131,7 @@
     "employee_count": 500,
     "scheduled_at": "2026-06-16T09:28:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:28 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r710642198909214872",
     "via": "composio"
   },
@@ -148,7 +148,7 @@
     "employee_count": 500,
     "scheduled_at": "2026-06-16T09:32:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:32 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r6778486863799378782",
     "via": "composio"
   },
@@ -165,7 +165,7 @@
     "employee_count": null,
     "scheduled_at": "2026-06-16T09:36:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:36 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r5678637766857555624",
     "via": "composio"
   },
@@ -182,7 +182,7 @@
     "employee_count": 200,
     "scheduled_at": "2026-06-16T09:40:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:40 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r-8444077924652490046",
     "via": "composio"
   },
@@ -199,7 +199,7 @@
     "employee_count": 500,
     "scheduled_at": "2026-06-16T09:44:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:44 AM EDT",
-    "status": "draft_created",
+    "status": "sent",
     "gmail_draft_id": "r-4222827077725625333",
     "via": "composio"
   },
