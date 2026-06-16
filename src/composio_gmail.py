@@ -101,6 +101,15 @@ def create_drafts(queue_path: Path | None = None) -> list[dict]:
 def send_due(queue_path: Path | None = None, *, dry_run: bool = False) -> int:
     """Send queued emails whose scheduled_at has passed."""
     queue_path = queue_path or OUTPUT_DIR / "send_queue.json"
+    if not queue_path.exists():
+        outreach = OUTPUT_DIR / "outreach_drafts.json"
+        if outreach.exists():
+            console.print("[yellow]No send queue — building from outreach drafts[/yellow]")
+            build_queue(input_path=outreach, save=True)
+        else:
+            raise FileNotFoundError(
+                f"Missing {queue_path}. Run: python run.py schedule"
+            )
     queue = json.loads(queue_path.read_text())
     composio = get_composio()
     uid = get_user_id()

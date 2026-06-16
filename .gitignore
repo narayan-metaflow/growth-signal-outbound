@@ -1,5 +1,7 @@
 .env
-output/
+output/*
+!output/send_queue.json
+!output/outreach_drafts.json
 __pycache__/
 *.pyc
 .venv/
