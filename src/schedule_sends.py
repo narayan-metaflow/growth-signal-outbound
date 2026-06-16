@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 
 from rich.console import Console
 
-from src.config import OUTPUT_DIR
+from src.config import OUTPUT_DIR, OUTREACH_FILE, QUEUE_FILE
 
 console = Console()
 
@@ -71,7 +71,9 @@ def _dedupe_drafts(drafts: list[dict]) -> list[dict]:
 
 def build_queue(input_path: Path | None = None, save: bool = True) -> list[dict]:
     cfg = load_send_config()
-    input_path = input_path or OUTPUT_DIR / "outreach_drafts.json"
+    input_path = input_path or OUTREACH_FILE
+    if not input_path.exists():
+        input_path = OUTPUT_DIR / "outreach_drafts.json"
     drafts = _dedupe_drafts(json.loads(input_path.read_text()))
 
     if cfg.get("skip_without_email"):
@@ -93,6 +95,8 @@ def build_queue(input_path: Path | None = None, save: bool = True) -> list[dict]
         console.print(f"Last:  {queue[-1]['scheduled_display']}")
 
     if save:
+        (QUEUE_FILE).write_text(json.dumps(queue, indent=2))
+        # keep output/ copy for local convenience
         OUTPUT_DIR.mkdir(exist_ok=True)
         (OUTPUT_DIR / "send_queue.json").write_text(json.dumps(queue, indent=2))
         lines = ["| # | When | To | Company | Subject |", "|---|------|-----|---------|---------|"]
@@ -102,7 +106,7 @@ def build_queue(input_path: Path | None = None, save: bool = True) -> list[dict]
                 f"({q['to_email']}) | {q['company']} | {q['subject']} |"
             )
         (OUTPUT_DIR / "send_schedule.md").write_text("\n".join(lines) + "\n")
-        console.print(f"Saved → {OUTPUT_DIR / 'send_queue.json'}")
+        console.print(f"Saved → {QUEUE_FILE}")
 
     return queue
 

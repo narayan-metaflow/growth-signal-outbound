@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 from rich.console import Console
 
 from src.composio_client import get_composio, get_user_id
-from src.config import OUTPUT_DIR
+from src.config import OUTPUT_DIR, OUTREACH_FILE, QUEUE_FILE
 from src.schedule_sends import build_queue
 
 console = Console()
@@ -52,7 +52,7 @@ def connect(auth_config_id: str | None = None) -> str:
 
 def create_drafts(queue_path: Path | None = None) -> list[dict]:
     """Create Gmail drafts from send queue via Composio."""
-    queue_path = queue_path or OUTPUT_DIR / "send_queue.json"
+    queue_path = queue_path or QUEUE_FILE
     if not queue_path.exists():
         build_queue()
 
@@ -100,9 +100,11 @@ def create_drafts(queue_path: Path | None = None) -> list[dict]:
 
 def send_due(queue_path: Path | None = None, *, dry_run: bool = False) -> int:
     """Send queued emails whose scheduled_at has passed."""
-    queue_path = queue_path or OUTPUT_DIR / "send_queue.json"
+    queue_path = queue_path or QUEUE_FILE
     if not queue_path.exists():
-        outreach = OUTPUT_DIR / "outreach_drafts.json"
+        outreach = OUTREACH_FILE
+        if not outreach.exists():
+            outreach = OUTPUT_DIR / "outreach_drafts.json"
         if outreach.exists():
             console.print("[yellow]No send queue — building from outreach drafts[/yellow]")
             build_queue(input_path=outreach, save=True)
