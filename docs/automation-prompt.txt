@@ -6,6 +6,8 @@ Do NOT run `python run.py composio-send` directly.
 Queue file is `send_queue.json` at repo root (NOT output/send_queue.json).
 
 COMPOSIO_API_KEY must be in Cloud Agent secrets.
+Optional: HUNTER_API_KEY for email verification before send.
+GITHUB_TOKEN (repo write) required so send_queue.json persists — without it, emails may send multiple times.
 
 After the script, parse stdout for "Sent: N".
 

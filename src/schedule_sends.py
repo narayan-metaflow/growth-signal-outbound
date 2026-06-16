@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 from rich.console import Console
 
 from src.config import OUTPUT_DIR, OUTREACH_FILE, QUEUE_FILE
+from src.validators import is_fake_email, is_fake_phone
 
 console = Console()
 
@@ -78,6 +79,12 @@ def build_queue(input_path: Path | None = None, save: bool = True) -> list[dict]
 
     if cfg.get("skip_without_email"):
         drafts = [d for d in drafts if d.get("to_email")]
+
+    drafts = [
+        d for d in drafts
+        if not is_fake_email(d.get("to_email"))
+        and not is_fake_phone(d.get("to_phone"))
+    ]
 
     slots = _next_send_days(cfg, len(drafts), datetime.now(ZoneInfo(cfg["timezone"])))
     queue = []

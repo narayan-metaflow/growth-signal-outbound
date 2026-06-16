@@ -25,6 +25,9 @@ git config user.email "outbound-bot@users.noreply.github.com"
 git config user.name "Outbound Bot"
 git add send_queue.json
 git commit -m "chore: update send queue after composio-send"
-git push origin HEAD
+if ! git push origin HEAD; then
+  echo "ERROR: git push failed — queue updates not persisted; disable automation to avoid duplicate sends" >&2
+  exit 1
+fi
 
 exit "$SENT"

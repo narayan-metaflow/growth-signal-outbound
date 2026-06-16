@@ -182,9 +182,10 @@
     "employee_count": 200,
     "scheduled_at": "2026-06-16T09:40:00-04:00",
     "scheduled_display": "Tue Jun 16, 2026 09:40 AM EDT",
-    "status": "draft_created",
+    "status": "skipped",
     "gmail_draft_id": "r-8444077924652490046",
-    "via": "composio"
+    "via": "composio",
+    "skip_reason": "placeholder_contact"
   },
   {
     "to_name": "Cameron Mills",

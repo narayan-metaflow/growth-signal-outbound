@@ -118,6 +118,31 @@ def email_finder(
     }
 
 
+def verify_email(email: str) -> dict | None:
+    """Hunter email verifier. Returns {result, score} or None if unavailable."""
+    try:
+        resp = requests.get(
+            f"{BASE}/email-verifier",
+            params={"api_key": _api_key(), "email": email},
+            timeout=20,
+        )
+        if resp.status_code == 401:
+            return None
+        resp.raise_for_status()
+        return resp.json().get("data") or {}
+    except Exception:
+        return None
+
+
+def is_deliverable(email: str) -> bool:
+    """True if Hunter says deliverable/risky, or verifier unavailable."""
+    data = verify_email(email)
+    if not data:
+        return True
+    result = (data.get("result") or "").lower()
+    return result in ("deliverable", "risky")
+
+
 def pick_best_contact(contacts: list[dict]) -> dict | None:
     ranked = []
     for c in contacts:

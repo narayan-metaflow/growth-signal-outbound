@@ -13,8 +13,38 @@ from rich.console import Console
 from src.composio_client import get_composio, get_user_id
 from src.config import OUTPUT_DIR, OUTREACH_FILE, QUEUE_FILE
 from src.schedule_sends import build_queue
+from src.validators import is_fake_email, is_fake_phone
 
 console = Console()
+
+DONE_STATUSES = frozenset({"sent", "failed", "skipped", "cancelled", "sending"})
+
+
+def _save_queue(queue_path: Path, queue: list[dict]) -> None:
+    queue_path.write_text(json.dumps(queue, indent=2))
+
+
+def _should_send(item: dict) -> bool:
+    if item.get("status") in DONE_STATUSES:
+        return False
+    email = item.get("to_email")
+    if not email or is_fake_email(email) or is_fake_phone(item.get("to_phone")):
+        return False
+    return True
+
+
+def _verify_recipient(email: str) -> tuple[bool, str | None]:
+    if os.environ.get("HUNTER_API_KEY"):
+        try:
+            from src.hunter_client import is_deliverable, verify_email
+
+            data = verify_email(email)
+            if data and not is_deliverable(email):
+                result = data.get("result") or "invalid"
+                return False, f"hunter:{result}"
+        except Exception:
+            pass
+    return True, None
 
 
 def _gmail_connected() -> bool:
@@ -65,7 +95,7 @@ def create_drafts(queue_path: Path | None = None) -> list[dict]:
         if item.get("status") in ("draft_created", "sent"):
             continue
         to = item.get("to_email")
-        if not to:
+        if not to or is_fake_email(to):
             continue
         result = composio.tools.execute(
             "GMAIL_CREATE_EMAIL_DRAFT",
@@ -90,7 +120,7 @@ def create_drafts(queue_path: Path | None = None) -> list[dict]:
         created.append(item)
         console.print(f"[green]Draft[/green] → {to} ({item['company']})")
 
-    queue_path.write_text(json.dumps(queue, indent=2))
+    _save_queue(queue_path, queue)
     console.print(
         f"\n{len(created)} drafts in Gmail. "
         "Open Gmail → Drafts → Schedule send for each (or use `run.py composio-send`)."
@@ -99,7 +129,7 @@ def create_drafts(queue_path: Path | None = None) -> list[dict]:
 
 
 def send_due(queue_path: Path | None = None, *, dry_run: bool = False) -> int:
-    """Send queued emails whose scheduled_at has passed."""
+    """Send queued emails whose scheduled_at has passed. Each address sends at most once."""
     queue_path = queue_path or QUEUE_FILE
     if not queue_path.exists():
         outreach = OUTREACH_FILE
@@ -119,35 +149,58 @@ def send_due(queue_path: Path | None = None, *, dry_run: bool = False) -> int:
     sent = 0
 
     for item in queue:
-        if item.get("status") == "sent":
+        if item.get("status") == "sending":
+            console.print(f"[yellow]Skip in-flight[/yellow] {item.get('to_email')}")
+            continue
+        if not _should_send(item):
+            if item.get("status") not in DONE_STATUSES and (
+                is_fake_email(item.get("to_email")) or is_fake_phone(item.get("to_phone"))
+            ):
+                item["status"] = "skipped"
+                item["skip_reason"] = "placeholder_contact"
+                _save_queue(queue_path, queue)
             continue
         when = datetime.fromisoformat(item["scheduled_at"])
         if when.tzinfo is None:
             when = when.replace(tzinfo=ZoneInfo("America/New_York"))
         if when.astimezone(ZoneInfo("UTC")) > now:
             continue
-        to = item.get("to_email")
-        if not to:
+        to = item["to_email"]
+        ok, skip_reason = _verify_recipient(to)
+        if not ok:
+            item["status"] = "skipped"
+            item["skip_reason"] = skip_reason
+            console.print(f"[yellow]Skipped[/yellow] {to}: {skip_reason}")
+            if not dry_run:
+                _save_queue(queue_path, queue)
             continue
         if dry_run:
             console.print(f"[yellow]Would send[/yellow] → {to}")
-        else:
-            result = composio.tools.execute(
-                "GMAIL_SEND_EMAIL",
-                user_id=uid,
-                arguments={
-                    "recipient_email": to,
-                    "subject": item["subject"],
-                    "body": item["body"],
-                },
-            )
-            if not result.get("successful"):
-                console.print(f"[red]Failed[/red] {to}: {result.get('error')}")
-                continue
-            item["status"] = "sent"
-            console.print(f"[green]Sent[/green] → {to}")
-        sent += 1
+            sent += 1
+            continue
 
-    if not dry_run:
-        queue_path.write_text(json.dumps(queue, indent=2))
+        item["status"] = "sending"
+        item["send_attempted_at"] = now.isoformat()
+        _save_queue(queue_path, queue)
+
+        result = composio.tools.execute(
+            "GMAIL_SEND_EMAIL",
+            user_id=uid,
+            arguments={
+                "recipient_email": to,
+                "subject": item["subject"],
+                "body": item["body"],
+            },
+        )
+        if not result.get("successful"):
+            item["status"] = "failed"
+            item["error"] = str(result.get("error") or "send failed")
+            console.print(f"[red]Failed[/red] {to}: {item['error']}")
+        else:
+            item["status"] = "sent"
+            item["sent_at"] = datetime.now(ZoneInfo("UTC")).isoformat()
+            console.print(f"[green]Sent[/green] → {to}")
+            sent += 1
+        _save_queue(queue_path, queue)
+
     return sent

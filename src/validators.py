@@ -11,6 +11,13 @@ FAKE_EMAIL_DOMAINS = {"greenhouse.io", "lever.co", "ashbyhq.com", "example.com"}
 FAKE_PHONE_PATTERN = re.compile(r"^(\+?1?[-.\s]?)?(123[-.\s]?456[-.\s]?7890|000|111)")
 
 
+FAKE_EMAIL_LOCALS = {
+    "johndoe", "janedoe", "jane.doe", "john.doe", "john.smith", "jane.smith",
+    "test", "demo", "sample", "user", "name", "firstname", "lastname",
+}
+GENERIC_OK_LOCALS = {"info", "hello", "contact", "sales", "support", "team"}
+
+
 def is_fake_name(name: str | None) -> bool:
     if not name:
         return True
@@ -26,16 +33,18 @@ def is_fake_email(email: str | None) -> bool:
     local, domain = email.split("@", 1)
     if domain in FAKE_EMAIL_DOMAINS or "example" in domain:
         return True
-    if local in {"johndoe", "janedoe", "jane.doe", "john.smith", "test", "info"}:
-        return False  # info@ is ok for general contact
-    if "johndoe" in local or "janedoe" in local or local == "john.smith":
+    if local in GENERIC_OK_LOCALS:
+        return False
+    if local in FAKE_EMAIL_LOCALS:
+        return True
+    if local.startswith(("john.doe", "jane.doe", "first.last", "first.lastname")):
         return True
     return False
 
 
 def is_fake_phone(phone: str | None) -> bool:
     if not phone:
-        return True
+        return False
     return bool(FAKE_PHONE_PATTERN.match(phone.replace(" ", "")))
 
 
