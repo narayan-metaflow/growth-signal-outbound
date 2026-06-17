@@ -5,7 +5,12 @@ import argparse
 
 from rich.console import Console
 
-from src.composio_gmail import connect as composio_connect, create_drafts as composio_drafts, send_due as composio_send
+from src.composio_gmail import (
+    connect as composio_connect,
+    create_drafts as composio_drafts,
+    print_schedule_guide,
+    send_due as composio_send,
+)
 from src.discover import discover
 from src.enrich import enrich
 from src.gmail_send import create_drafts, send_due
@@ -31,7 +36,7 @@ def main():
     parser.add_argument(
         "step",
         nargs="?",
-        choices=["all", "gmail-drafts", "send", "composio-drafts", "composio-send", "composio-connect", "send-daemon", *STEPS.keys()],
+        choices=["all", "publish", "gmail-drafts", "send", "composio-drafts", "composio-send", "composio-connect", "send-daemon", *STEPS.keys()],
         default="all",
         help="Pipeline step to run (default: all)",
     )
@@ -54,6 +59,12 @@ def main():
 
     if args.step == "all":
         steps = list(STEPS.keys())
+    elif args.step == "publish":
+        build_queue()
+        composio_drafts()
+        print_schedule_guide()
+        console.print("\n[green]Done.[/green] Schedule each draft in Gmail — do not use composio-send or Cursor automation.")
+        return
     elif args.step == "composio-connect":
         composio_connect()
         return

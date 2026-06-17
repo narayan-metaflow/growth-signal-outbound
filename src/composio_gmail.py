@@ -92,10 +92,12 @@ def create_drafts(queue_path: Path | None = None) -> list[dict]:
     created = []
 
     for item in queue:
-        if item.get("status") in ("draft_created", "sent"):
+        if item.get("status") in ("draft_created", "sent", "scheduled", "cancelled", "skipped"):
             continue
         to = item.get("to_email")
-        if not to or is_fake_email(to):
+        if not to or is_fake_email(to) or is_fake_phone(item.get("to_phone")):
+            item["status"] = "skipped"
+            item["skip_reason"] = "placeholder_contact"
             continue
         result = composio.tools.execute(
             "GMAIL_CREATE_EMAIL_DRAFT",
@@ -121,11 +123,35 @@ def create_drafts(queue_path: Path | None = None) -> list[dict]:
         console.print(f"[green]Draft[/green] → {to} ({item['company']})")
 
     _save_queue(queue_path, queue)
+    console.print(f"\n[bold]{len(created)} drafts in Gmail[/bold]")
     console.print(
-        f"\n{len(created)} drafts in Gmail. "
-        "Open Gmail → Drafts → Schedule send for each (or use `run.py composio-send`)."
+        "Schedule in Gmail (no Cursor automation):\n"
+        "  1. Open Gmail → Drafts\n"
+        "  2. Open each draft → ⋮ → Schedule send\n"
+        "  3. Use times in output/send_schedule.md"
     )
     return created
+
+
+def print_schedule_guide(queue_path: Path | None = None) -> None:
+    """Print when to schedule each draft in Gmail."""
+    queue_path = queue_path or QUEUE_FILE
+    schedule_md = OUTPUT_DIR / "send_schedule.md"
+    if schedule_md.exists():
+        console.print(f"\nSchedule times → {schedule_md}")
+    queue = json.loads(queue_path.read_text())
+    pending = [
+        q for q in queue
+        if q.get("status") in ("pending", "draft_created") and q.get("to_email")
+    ]
+    if not pending:
+        return
+    console.print("\n| When | To | Company |")
+    console.print("|------|-----|---------|")
+    for q in pending:
+        console.print(
+            f"| {q.get('scheduled_display', '—')} | {q['to_email']} | {q.get('company', '—')} |"
+        )
 
 
 def send_due(queue_path: Path | None = None, *, dry_run: bool = False) -> int:

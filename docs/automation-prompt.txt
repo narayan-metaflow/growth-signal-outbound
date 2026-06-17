@@ -1,20 +1,7 @@
-Run exactly from repo root (growth-signal-outbound, main):
+DEPRECATED — do not use Cursor automation for sending.
 
-  bash scripts/cloud-send.sh
+Use Gmail Schedule Send instead. See docs/SEND.md and run:
 
-Do NOT run `python run.py composio-send` directly.
-Queue file is `send_queue.json` at repo root (NOT output/send_queue.json).
+  bash scripts/publish-to-gmail.sh
 
-COMPOSIO_API_KEY must be in Cloud Agent secrets.
-Optional: HUNTER_API_KEY for email verification before send.
-Git push auth (pick one): GITHUB_TOKEN or GIT_SSH_PRIVATE_KEY — required so send_queue.json persists.
-
-After the script, parse stdout for "Sent: N".
-
-SLACK RULES (strict):
-- If N is 0 and no errors: do NOT use Send to Slack. End silently.
-- If N > 0: post to Slack — count sent, recipient(s), pending count, next scheduled_at.
-- If all queue items are sent: post once — "All outbound emails complete."
-- If script fails OR send_queue.json missing: post to Slack with the error.
-
-Do not post status for idle cron checks (Sent: 0).
+Keep the email send automation INACTIVE.
